@@ -4,6 +4,10 @@ import numpy as np
 from main import Simulator
 from strategy import calculate_bollinger_bands, calculate_sma
 
+df = (
+    pd.read_json("...", lines=True)
+)
+
 # Calculate SMA and Bollinger Bands
 calculate_sma(df, 10, 30, "Order_sma")
 calculate_bollinger_bands(
