@@ -5,7 +5,7 @@ from main import Simulator
 from strategy import calculate_bollinger_bands, calculate_sma
 
 df = (
-    pd.read_json("...", lines=True)
+    pd.read_json("...")
 )
 
 # Calculate SMA and Bollinger Bands
