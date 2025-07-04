@@ -1,7 +1,9 @@
+# Copyright (c) 2025 CungUng. All rights reserved.
+# This file is licensed for personal, non-commercial use only.
 from math import floor
 import unittest
 import pandas as pd
-from src.main import Simulator
+from flexbt.main import Simulator
 
 
 class TestSimulatePortfolioStaticLotSizeMode(unittest.TestCase):
