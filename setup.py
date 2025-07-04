@@ -1,8 +1,10 @@
 # Copyright (c) 2025 CungUng. All rights reserved.
 # This setup.py is licensed for personal, non-commercial use only.
-raise RuntimeError(
+import warnings
+warnings.warn(
     "This version of flexbt is licensed for personal, non-commercial use only. "
-    "Contact the author for commercial licensing."
+    "Contact the author for commercial licensing.",
+    UserWarning
 )
 
 from setuptools import setup, find_packages
