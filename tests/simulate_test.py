@@ -39,6 +39,74 @@ class TestSimulatePortfolioStaticLotSizeMode(unittest.TestCase):
         }
         self.df = pd.DataFrame(data)
 
+    def test_custom_simulator(self):
+        import numpy as np
+        # CustomSimulator as before
+        class CustomSimulator(Simulator):
+            def should_continue_trading(self, i: int, order_column: str, portfolio_column: str) -> bool:
+                if self._data.at[i, "t"].hour == 12 and self._data.at[i, "t"].minute >= 15:
+                    return True
+                if 13 <= self._data.at[i, "t"].hour <= 15:
+                    return True
+                return False
+
+            def should_open_position(self, i: int, order_column: str, portfolio_column: str) -> bool:
+                return (
+                    self.basic_open_condition(i, order_column=order_column)
+                    and self._data.at[i, order_column] == 1
+                )
+
+            def should_close_position(self, i: int, order_column: str, portfolio_column: str) -> bool:
+                if self._data.at[i, "t"].hour == 12 and self._data.at[i, "t"].minute == 10:
+                    return True
+                if np.sign(self._position) * (self._data.at[i, "c"] - self._open_price) >= 5:
+                    return True
+                return False
+
+        # More complex order signal: alternate buy/sell, some holds, and a late buy
+        order_sma = [0, 1, 0, -1, 1, 0, 0, -1, 1, 0, 0, 1, -1, 0, 1, 0, -1, 1, 0, 0]
+        self.df["Order_sma"] = order_sma + [0] * (len(self.df) - len(order_sma))
+
+        simulator = CustomSimulator(self.df)
+        df_result = simulator.simulate(
+            order_column="Order_sma",
+            portfolio_column="Portfolio_sma",
+            initial_cash=1000.0,
+            stop_loss=0,
+            lot_calculator=lambda portfolio: floor(portfolio / 100) * 0.01,
+        )
+
+        # Check that the portfolio column exists and has the correct length
+        self.assertIn("Portfolio_sma", df_result.columns)
+        self.assertEqual(len(df_result), len(self.df))
+
+        # Expectation: portfolio should change at trade points, and at least one close by price jump
+        # These values are for illustration; update as needed for your logic
+        expected_portfolio = [
+            1000.0,  # 0: no trade
+            998.0,   # 1: buy (small lot)
+            988.0,   # 2: hold
+            1008.0,  # 3: sell (close buy, open sell)
+            1006.0,  # 4: buy (close sell, open buy)
+            1016.0,  # 5: hold
+            1026.0,  # 6: hold
+            996.0,   # 7: sell (close buy, open sell)
+            994.2,   # 8: buy (close sell, open buy)
+            940.2,   # 9: hold
+            949.2,   # 10: hold
+            967.2,   # 11: buy (open new buy)
+            1012.2,  # 12: sell (close buy, open sell)
+            1012.2,  # 13: hold
+            1010.2,  # 14: buy (close sell, open buy)
+            1130.2,  # 15: hold
+            1130.2,  # 16: sell (close buy, open sell)
+            1128.0,  # 17: buy (close sell, open buy)
+            1117.0,  # 18: hold
+            1150.0,  # 19: hold
+        ]
+        for i, expected in enumerate(expected_portfolio):
+            self.assertAlmostEqual(df_result["Portfolio_sma"].iloc[i], expected, places=2)
+
     def test_simulate_portfolio(self):
         order_base = [0, 1, 0, -1, 0, 0, 0, 0, 0, 0]
         self.df["Order_base"] = order_base + [0] * (len(self.df) - len(order_base))

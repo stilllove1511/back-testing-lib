@@ -12,25 +12,18 @@ This library provides tools for backtesting trading strategies using historical 
 
 1. [Installation](#installation)
 2. [Getting Started](#getting-started)
-3. [Technical Indicators](#technical-indicators)
-4. [Simulation](#simulation)
-5. [Custom Strategies](#custom-strategies)
-6. [Advanced Usage](#advanced-usage)
-7. [Troubleshooting](#troubleshooting)
-8. [License](#license)
+3. [Simulation](#simulation)
+4. [Custom Strategies](#custom-strategies)
+5. [Troubleshooting](#troubleshooting)
+6. [License](#license)
 
 <a name="installation"></a>
 ## 1. Installation
 
-To install the library, you have two options:
-
-- **From local folder:**
-  ```sh
-  pip install -e /path/to/back-testing-lib
-  ```
+Install the library:
 - **From GitHub:**
   ```sh
-  pip install git+https://github.com/<yourusername>/back-testing-lib.git
+  pip install git+https://github.com/stilllove1511/back-testing-lib.git
   ```
 
 <a name="getting-started"></a>
@@ -66,20 +59,8 @@ result = sim.simulate(
 print(result[["t", "c", "Order", "Portfolio"]])
 ```
 
-<a name="technical-indicators"></a>
-## 3. Technical Indicators
-
-The library includes functions to calculate common technical indicators. For example, to calculate the Simple Moving Average (SMA):
-
-```python
-from strategy import calculate_sma
-
-# Assuming df is your DataFrame with price data
-calculate_sma(df, 10, 30, "Order_sma")
-```
-
 <a name="simulation"></a>
-## 4. Simulation
+## 3. Simulation
 
 To simulate trading strategies, use the `Simulator` class. Here's an example:
 
@@ -123,19 +104,10 @@ df = simulator.simulate(
     stop_loss=0,
     lot_calculator=lambda portfolio: floor(portfolio / 100) * 0.01,
 )
-
-# Simulate with the Bollinger Bands strategy
-df = simulator.simulate(
-    order_column="Order_bb",
-    portfolio_column="Portfolio_BB",
-    initial_cash=1000.0,
-    stop_loss=0,
-    lot_calculator=lambda portfolio: floor(portfolio / 100) * 0.01,
-)
 ```
 
 <a name="custom-strategies"></a>
-## 5. Custom Strategies
+## 4. Custom Strategies
 
 You can subclass `bt.Simulator` to override trading logic for more advanced strategies. For example:
 
@@ -152,22 +124,8 @@ class MyStrategy(bt.Simulator):
         pass
 ```
 
-<a name="advanced-usage"></a>
-## 6. Advanced Usage
-
-For advanced users, the library offers low-level access to the backtesting engine. You can manually control the simulation loop, access internal states, and more.
-
-```python
-sim = bt.Simulator(df)
-sim.start()  # Start the simulation
-
-for i in range(len(df)):
-    sim.next()  # Advance to the next time step
-    # Access or modify internal state if needed
-```
-
 <a name="troubleshooting"></a>
-## 7. Troubleshooting
+## 5. Troubleshooting
 
 - **Common Issues**
   - If you encounter issues, first check the [FAQ](faq.md) for common problems and solutions.
@@ -178,7 +136,7 @@ for i in range(len(df)):
   - Simplify your strategy to the most basic form to isolate the problem, then gradually add complexity.
 
 <a name="license"></a>
-## 8. License
+## 6. License
 
 This software is licensed for personal, non-commercial use only.  
 See the [LICENSE](LICENSE) file for detailed terms.
